@@ -378,6 +378,7 @@
             
             break;
           case ']':
+          case '\r':
           case '\n':
 
             stopRender(char);
