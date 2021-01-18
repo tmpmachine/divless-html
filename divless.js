@@ -20,10 +20,37 @@
 
 (function () {
   
+  function generateAttributes(attributes) {
+    const atts = [];
+  
+    if (attributes.id.length > 0)
+      atts.push('id="'+attributes.id.join('')+'"');
+    if (attributes.class.length > 0)
+      atts.push('class="'+attributes.class.join(' ')+'"');
+    if (attributes.attribute.length > 0)
+      atts.push(attributes.attribute.join(' '));
+    if (attributes.style.length > 0) {
+      for (let i in attributes.style)
+        if (!attributes.style[i].endsWith(';'))
+          attributes.style[i] += ';';
+      atts.push('style="'+attributes.style.join('')+'"');
+    }
+    
+    attributes.id.length = 0;
+    attributes.class.length = 0;
+    attributes.attribute.length = 0;
+    attributes.style.length = 0;
+    attributes.innerHTML.length = 0;
+    
+    if (atts.length > 0)
+      return ' '+atts.join(' ');
+    else
+      return atts.join(' ');
+  }
+    
   let HTMLShortname = [
     [' '  ,'div'      ,true ,''],
     ['v'  ,'video'    ,true ,''],
-    ['a'  ,'a'        ,true ,''],
     ['au' ,'audio'    ,true ,''],
     ['btn','button'   ,true ,''],
     ['can','canvas'   ,true ,''],
@@ -36,87 +63,68 @@
     ['opt','option'   ,true ,''],
     ['M'  ,'i'        ,true ,'material-icons'],
   ];
-  
-  let CSSShortname = [
-    ['col-start:','grid-column-start:'],
-    ['row-start:','grid-row-start:'],
-    ['col-end:','grid-column-end:'],
-    ['row-end:','grid-row-end:'],
-    ['content:','justify-content:'],
-    ['items:','align-items:'],
-    ['align:','text-align:'],
-    ['space:','white-space:'],
-    ['style:','font-style:'],
-    ['line:','line-height:'],
-    ['rows:','grid-template-rows:'],
-    ['cols:','grid-template-columns:'],
-    ['size:','font-size:'],
-    ['gap:','grid-gap:'],
-    ['col:','grid-column:'],
-    ['row:','grid-row:'],
-    ['rad:','border-radius:'],
-    ['bor:','border:'],
-    ['pos:','position:'],
-    ['opa:','opacity:'],
-    ['fw:','font-weight:'],
-    ['ov:','overflow:'],
-    ['mw:','min-width:'],
-    ['mh:','min-height:'],
-    ['Mw:','max-width:'],
-    ['Mh:','max-height:'],
-    ['td:','text-decoration:'],
-    ['tt:','text-transform:'],
-    ['ml:','margin-left:'],
-    ['mt:','margin-top:'],
-    ['mr:','margin-right:'],
-    ['mb:','margin-bottom:'],
-    ['pl:','padding-left:'],
-    ['pt:','padding-top:'],
-    ['pr:','padding-right:'],
-    ['pb:','padding-bottom:'],
-    ['b:','background:'],
-    ['f:','font-family:'],
-    ['c:','color:'],
-    ['d:','display:'],
-    ['h:','height:'],
-    ['m:','margin:'],
-    ['p:','padding:'],
-    ['v:','visibility:'],
-    ['w:','width:'],
-    ['z:','z-index:'],
-  ];
-  
-  function generateAttributes(attributes) {
-    const atts = [];
-  
-    if (attributes.id.length > 0) {
-      atts.push('id="'+attributes.id.join('')+'"');
-    }
-    if (attributes.class.length > 0) {
-      atts.push('class="'+attributes.class.join(' ')+'"');
-    }
-    if (attributes.attribute.length > 0) {
-      atts.push(attributes.attribute.join(' '));
-    }
-    if (attributes.style.length > 0) {
-      for (let i in attributes.style) {
-        if (!attributes.style[i].endsWith(';')) {
-          attributes.style[i] += ';';
-        }
-      }
-      atts.push('style="'+attributes.style.join('')+'"');
-    }
+  let CSSShortname = {
+    'p:': 'padding:',
+    'pl:': 'padding-left:',
+    'pt:': 'padding-top:',
+    'pr:': 'padding-right:',
+    'pb:': 'padding-bottom:',
     
-    attributes.id.length = 0;
-    attributes.class.length = 0;
-    attributes.attribute.length = 0;
-    attributes.style.length = 0;
-    attributes.innerHTML.length = 0;
+    'm:': 'margin:',
+    'ml:': 'margin-left:',
+    'mt:': 'margin-top:',
+    'mr:': 'margin-right:',
+    'mb:': 'margin-bottom:',
     
-    return (atts.length > 0) ? ' '+atts.join(' ') : atts.join(' ');
-  }
+    'td:': 'text-decoration:',
+    'tt:': 'text-transform:',
+    'ff:': 'font-family:',
+    'fs:': 'font-size:',
+    'ft:': 'font-style:',
+    'fw:': 'font-weight:',
     
-  function replaceShortname(meat, attributes) {
+    'ta:': 'text-align:',
+    'ws:': 'white-space:',
+    
+    'f:': 'float:',
+    'ov:': 'overflow:',
+    
+    'mw:': 'min-width:',
+    'mh:': 'min-height:',
+    'Mw:': 'max-width:',
+    'Mh:': 'max-height:',
+    'w:': 'width:',
+    'h:': 'height:',
+    
+    'd:': 'display:',
+    'vis:': 'visibility:',
+    'op:': 'opacity:',
+    
+    'rows:': 'grid-template-rows:',
+    'cols:': 'grid-template-columns:',
+    'col-start:': 'grid-column-start:',
+    'row-start:': 'grid-row-start:',
+    'col-end:': 'grid-column-end:',
+    'row-end:': 'grid-row-end:',
+    'gap:': 'grid-gap:',
+    
+    'col:': 'color:',
+    'bg:': 'background:',
+    
+    'rad:': 'border-radius:',
+    'bor:': 'border:',
+    
+    'pos:': 'position:',
+    'z:': 'z-index:',
+    't:': 'top:',
+    'l:': 'left:',
+    'r:': 'right:',
+    'b:': 'bottom:',
+    
+    'lh:': 'line-height:',
+  };
+  
+  function replaceShortName(meat, attributes) {
     
     const lt = String.fromCharCode(60);
     const gt = String.fromCharCode(62);
@@ -135,10 +143,9 @@
     };
     
     const skips = [
-      {open:'<'+'?php', close:'?>'},
-      {open:'<'+'code>', close:'<'+'/code'+'>'},
-      {open:'<'+'style>', close:'<'+'/style'+'>'},
-      {open:'<'+'script', close:'<'+'/script'+'>'},
+      {open:'<code>', close:'</code>'},
+      {open:'<style>', close:'</style>'},
+      {open:'<script', close:'</script>'},
     ];
     
     for (const tag of HTMLShortname) {
@@ -188,7 +195,6 @@
     const newMatch = [];
     var charBypass = '';
     var mode = '';
-    let waitingCloseBracket = false;
     
     function finishTag() {
       var tagName = tagStack.join('');
@@ -300,6 +306,7 @@
                 
                   for (const xs of stack)
                     ht.push(xs);
+                  
                 stack.length = 0;
                 break;
               }
@@ -312,13 +319,12 @@
             if (waitSkip.length == pointer+1) {
               mode = '';
 
-              var content = stack.splice(0,stack.length-waitSkip.length);
-              
               done = true;
               pointer = 0;
               
                 for (const xs of stack)
                   ht.push(xs);
+              
                 
               waitSkip = '';
               stack.length = 0;
@@ -361,25 +367,19 @@
             pointer = 1;
             if (mode === '')
               mode = 'open';
-            waitingCloseBracket = true;
               
             break;
           case '[':
             
-            // prevent changing mode if it's an actual HTML tag
-            if (waitingCloseBracket) {
-              ht.push(char);
-            } else {
-              attMode = '';
-              unClose++;
-              ht.push(lt);
-              mode = 'getTagName';
-            }
+            attMode = '';
+            unClose++;
+            ht.push(lt);
+            mode = 'getTagName';
             
             break;
           case ']':
-          case '\r':
           case '\n':
+          case '\r':
 
             stopRender(char);
             
@@ -431,8 +431,8 @@
                           scanType = 'attribute';
                       }
                       
-                      for (const xs of CSSShortname.keys())
-                        shortHandCheck.push(xs);
+                      for (let key in CSSShortname)
+                        shortHandCheck.push(key);
                       break;
                     }
                   }
@@ -508,7 +508,7 @@
                 if (scanType == 'attribute') {
                   var match = false;
                   for (var i = 0; i < shortHandCheck.length; i++) {
-                    if (CSSShortname[shortHandCheck[i]][0][shortHandPointer] == char)
+                    if (shortHandCheck[i][shortHandPointer] == char)
                       match = true;
                     else {
                       shortHandCheck.splice(i,1);
@@ -524,8 +524,8 @@
                       const end = shortHandPointer;
                       shortHandStack.splice(start,end);
                       
-                      for (const xs of CSSShortname[shortHandCheck[0]][1].split(''))
-                        shortHandStack.push(xs);
+                      for (const char of CSSShortname[shortHandCheck[0]].split(''))
+                        shortHandStack.push(char);
                     }
                   } else {
                     if (char == '!') {
@@ -537,7 +537,7 @@
                       }
                       
                       shortHandPointer = 0;
-                      for (const key of CSSShortname.keys())
+                      for (let key in CSSShortname)
                         shortHandCheck.push(key);
                     }
                     
@@ -550,9 +550,6 @@
             } else if (mode == 'getTagName') {
               tagStack.push(char);
             } else {
-              if (char == gt && waitingCloseBracket) {
-                waitingCloseBracket = false;
-              }
               ht.push(char)
             }
           
@@ -560,12 +557,14 @@
         }
       }
     }
+    
     return ht.join('');
   }
   
+  
   const divless = {
     tag: [],
-    replace: function(HTML, callback) {
+    replace: function(HTML) {
       const attributes = {
         class: [],
         attribute: [],
@@ -574,19 +573,14 @@
         innerHTML: []
       };
       
-      HTML = replaceShortname(HTML, attributes);
+      HTML = replaceShortName(HTML, attributes);
       
-      if (callback) {
-        callback(HTML);
-      } else {
-        return HTML;
-      }
+      return HTML;
     },
   }
   
-  if (window.divless === undefined) {
+  if (window.divless === undefined)
     window.divless = divless;
-  } else {
+  else
     console.error('divless.js:', 'Failed to initialize. Duplicate variable exists.');
-  }
 })();
