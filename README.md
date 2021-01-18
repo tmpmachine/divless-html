@@ -1,7 +1,8 @@
 # divless.js
 Generate HTML code from divless-HTML format.
 
-## Usage
+## Use Case & Basic Usage
+You can see the use case here: https://github.com/tmpmachine/codetmp under **Divless-HTML** section.
 ```javascript
 let html = divless.replace(divlessHTMLText);
 ```
