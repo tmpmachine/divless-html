@@ -1,22 +1,4 @@
-/*
-1.39 - 17 Jan 2021-- removing special tag html
-1.38 - 23 Aug -- restructuring code, change name to divless.js, modify several css shortname
-1.37 - 13 July -- remove unnecessary HTML shortname
-1.36 - 15 June -- prevent changing mode when reading an actual HTML tag attributes
-1.35 - 9 June -- remove overflow-x & overflow-y, added more grid css shorthand
-1.34 - 13 May -- remove w3.css support, added grid css shortcut
-1.331 : 24 march 2020 -- update duplicate var error message
-1.33 : 18 sep -- fix tag skips include error for Blogsphere, function encapsulation, unclose attribute handler, style without break handler
-1.32 : 7 sep -- encapsulation
-1.31 - 29 July - clear plate element
-1.30 - 22 May - added more css shorthand
-1.29 - 2 May - added skips for php
-1.28 - 11 Apr - reduced code from 922 to 757 line
-1.27 - 2 Apr - removing empty space after cook, rollback from let to var and const
-1.26 - 29 Mar - center, form, table, tr, td, th HTMLShortname
-1.25 - 27 Mar - removing default w3-row class for div
-1.24 - 6 Mar - added ul and li tag
-*/
+/* v1.39 */
 
 (function () {
   
