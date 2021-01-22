@@ -41,7 +41,7 @@ Returned result :
 | select	 | sel |
 | option	 | opt |
 
-## CSS (inline style only) Shortname
+## CSS Shortname (inline style only!)
 | CSS Property | Shortname |
 | --- | --- |
 | padding	 | p |
