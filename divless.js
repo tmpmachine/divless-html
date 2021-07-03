@@ -1,5 +1,4 @@
-/* v1.39 */
-
+/* v1.40 - 3 Jul 2021 */
 (function () {
   
   function generateAttributes(attributes) {
@@ -176,7 +175,8 @@
     var waitSkip = '';
     const newMatch = [];
     var charBypass = '';
-    var mode = '';
+    var state = '';
+    let skipNextLineFeeds = false;
     
     function finishTag() {
       var tagName = tagStack.join('');
@@ -203,7 +203,7 @@
         openingClose = '';
         closeTag.push('/'+gt);
       }
-      mode = 'scanTag';
+      state = 'scanTag';
       tagStack.length = 0;
       attributes.class = choosenTag.attributes.class.split(' ');
       if (attributes.class[0].length === 0)
@@ -217,10 +217,10 @@
         return;
       }
       
-      if (mode == 'getTagName')
+      if (state == 'getTagName')
         finishTag();
         
-      if (mode == 'scanTag' || mode == 'scanAtt' || unClose > 0) {
+      if (state == 'scanTag' || state == 'scanAtt' || unClose > 0) {
         if (scanType == 'class') {
           attributes.class.push(stack.join(''));
           stack.length = 0;
@@ -242,6 +242,9 @@
         if (char == ']') {
           stack.push(newAtt+openingClose+innerHTML+closeTag[closeTag.length-1]);
           closeTag.pop();
+        } else if (char == '\r') {
+          stack.push(newAtt+openingClose+innerHTML+'\n');
+          skipNextLineFeeds = true;
         } else {
           stack.push(newAtt+openingClose+innerHTML+'\n');
         }
@@ -258,7 +261,7 @@
         spaceOne = false;
         openingClose = '';
         stack.length = 0;
-        mode = ''
+        state = ''
         scanType = '';
       } else {
         ht.push(char);
@@ -267,12 +270,12 @@
     
     
     for (var char of meat) {
-      if (mode == 'open' || mode == 'skip') {
+      if (state == 'open' || state == 'skip') {
         stack.push(char);
         var match = false;
         var done = false;
         
-        if (mode == 'open') {
+        if (state == 'open') {
           for (const skip of skips) {
             var search = skip.open;
             
@@ -280,7 +283,7 @@
               match = true;
               
               if (search.length == pointer+1) {
-                mode = 'skip';
+                state = 'skip';
                 waitSkip = skip.close;
 
                 done = true;
@@ -294,12 +297,12 @@
               }
             }
           }
-        } else if (mode =='skip') {
+        } else if (state =='skip') {
           if (waitSkip[pointer] == char) {
             match = true;
             
             if (waitSkip.length == pointer+1) {
-              mode = '';
+              state = '';
 
               done = true;
               pointer = 0;
@@ -318,10 +321,11 @@
           if (done) continue;
           pointer++;
         } else {
-          if (mode == 'open')
-            mode = '';
-          else
+          if (state == 'open') {
+            state = '';
+          } else {
             pointer = 0;
+          }
           
             for (const xs of stack)
               ht.push(xs)
@@ -347,8 +351,8 @@
             
             stack.push(char);
             pointer = 1;
-            if (mode === '')
-              mode = 'open';
+            if (state === '')
+              state = 'open';
               
             break;
           case '[':
@@ -356,13 +360,19 @@
             attMode = '';
             unClose++;
             ht.push(lt);
-            mode = 'getTagName';
+            state = 'getTagName';
             
             break;
           case ']':
           case '\n':
           case '\r':
 
+            if (char == '\n') {
+              if (skipNextLineFeeds) {
+                skipNextLineFeeds = false;
+                continue;
+              }
+            }
             stopRender(char);
             
             break;
@@ -373,15 +383,15 @@
               charBypass = '';
             }
             
-            if (char === ' ' && mode === 'getTagName') {
+            if (char === ' ' && state === 'getTagName') {
               finishTag();
-            } else if (mode == 'scanTag') {
+            } else if (state == 'scanTag') {
               var match = false;
               if (attMode == '') {
                 for (const cls of settings.class) {
                   if (cls.short == char) {
                     match = true;
-                    mode = 'scanAtt';
+                    state = 'scanAtt';
                     scanType = 'class';
                     stack.push(cls.prefix);
                     break;
@@ -395,7 +405,7 @@
                   for (const attribute of settings.attributes) {
                     if (attribute.open == char) {
                       match = true;
-                      mode = 'scanAtt';
+                      state = 'scanAtt';
                       
                       switch (attribute.open) {
                         case '@':
@@ -469,7 +479,7 @@
                   }
                 }
               }
-            } else if (mode == 'scanAtt') {
+            } else if (state == 'scanAtt') {
               if ((char == ' ' && scanType != 'attribute') || char == '}' || char == '"' && scanType != 'attribute' || char == "'" && scanType != 'attribute') {
                 if (scanType == 'class') {
                   attributes.class.push(stack.join(''));
@@ -484,7 +494,7 @@
                 }
   
                 stack.length = 0;
-                mode = 'scanTag'
+                state = 'scanTag'
                 scanType = ''
               } else {
                 if (scanType == 'attribute') {
@@ -529,7 +539,7 @@
                   stack.push(char);
                 }
               }
-            } else if (mode == 'getTagName') {
+            } else if (state == 'getTagName') {
               tagStack.push(char);
             } else {
               ht.push(char)
