@@ -26,6 +26,14 @@ Returned result :
 
 ```
 
+## Skip Divless Format
+Divless.js will skip replacing divless HTML format if wrapped inside one of these matching sequence :
+| Start skip | End skip |
+| --- | --- |
+| <style	 | </style> |
+| <script	 | </script> |
+| &lt;!--nodivless--> | &lt;!--/nodivless--> |
+
 ## HTML Shortname
 | HTML Tag | Shortname |
 | --- | --- |
@@ -73,13 +81,6 @@ Returned result :
 | display	 | d |
 | visibility	 | vis |
 | opacity	 | op |
-| grid-template-rows	 | rows |
-| grid-template-columns	 | cols |
-| grid-gap	 | gap |
-| grid-column-start	 | col-start |
-| grid-column-end	 | col-end |
-| grid-row-start	 | row-start |
-| grid-row-end	 | row-end |
 | color	 | col |
 | background	 | bg |
 | border-radius	 | rad |
@@ -91,3 +92,16 @@ Returned result :
 | right	 | r |
 | bottom	 | b |
 | line-height	 | lh |
+
+### Flexbox / Grid
+| CSS Property | Shortname |
+| grid-template-rows	 | rows |
+| grid-template-columns	 | cols |
+| grid-gap	 | Gap |
+| grid-column-start	 | col-start |
+| grid-column-end	 | col-end |
+| grid-row-start	 | row-start |
+| grid-row-end	 | row-end |
+| align-items | ali |
+| align-self | als |
+| justify-content | jt |
