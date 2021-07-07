@@ -34,6 +34,70 @@ Divless.js will skip replacing divless HTML format if wrapped inside one of thes
 | <script	 | </script> |
 | &lt;!--nodivless--> | &lt;!--/nodivless--> |
 
+Example :
+```html
+[btn "Button 1"]
+<!--nodivless-->
+[ @my-div
+  Do not replace this part
+]
+<!--/nodivless-->
+[btn "Button 2"]
+```
+Returned result :
+```html
+<button>Button 1</button>
+<!--nodivless-->
+[ @my-div
+  Do not replace this part
+]
+<!--/nodivless-->
+<button>Button 2</button>
+```
+
+## Reserved Attribute Prefix
+### ID
+Use `@` to set element ID.
+```html
+[ @my-div
+  Hello World.
+]
+```
+Returned result :
+```html
+<div id="my-div">
+  Hellow World.
+</div>
+```
+
+### Class
+Use `.` to set element class.
+```html
+[ .class1 .class2
+  Hello World.
+]
+```
+Returned result :
+```html
+<div class="class1 class2">
+  Hellow World.
+</div>
+```
+
+### Inline Style
+Use `{}` to wrap inline style. CSS properties shortname available below.
+```html
+[ {p:8px 16px} {bor:1px solid} {pos:absolute;top:0} 
+  Hello World.
+]
+```
+Returned result :
+```html
+<div style="padding:8px 16px;border:1px solid;position:absolute;top:0">
+  Hellow World.
+</div>
+```
+
 ## HTML Shortname
 | HTML Tag | Shortname |
 | --- | --- |
