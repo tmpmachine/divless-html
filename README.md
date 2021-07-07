@@ -95,6 +95,7 @@ Divless.js will skip replacing divless HTML format if wrapped inside one of thes
 
 ### Flexbox / Grid
 | CSS Property | Shortname |
+|---|---|
 | grid-template-rows	 | rows |
 | grid-template-columns	 | cols |
 | grid-gap	 | Gap |
