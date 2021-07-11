@@ -98,6 +98,25 @@ Returned result :
 </div>
 ```
 
+## Development Hole
+`divless.js` has not been developed to parse HTML format, therefore any square brackets within HTML tag will be replaced as well.
+
+Example case :
+```html
+<button id="my-div" onclick="console.log(['some-array-value'])"></button>
+```
+Returned result :
+```html
+<button id="my-div" onclick="console.log(<div>'some-array-value'</div>)"></button>
+```
+
+In that case, you want to skip them by using a skipper.
+```html
+<!--nodivless-->
+<button id="my-div" onclick="console.log(['some-array-value'])"></button>
+<!--/nodivless-->
+```
+
 ## HTML Shortname
 | HTML Tag | Shortname |
 | --- | --- |
