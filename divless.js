@@ -87,6 +87,7 @@ window.divless = (function () {
     'jt:': 'justify-content:',
     'ali:': 'align-items:',
     'als:': 'align-self:',
+    'flexdir:': 'flex-direction:',
   };
   
   const skips = [
