@@ -104,6 +104,7 @@ window.divless = (function () {
       {open: '"', close: '"', name: 'innerHTML'},
       {open: "'", close: "'", name: 'innerHTML'},
       {open: '@', close: ' ', name: 'id'},
+      {open: '#', close: ' ', name: 'id'},
     ],
   };
   
@@ -347,6 +348,7 @@ window.divless = (function () {
               
               switch (attribute.open) {
                 case '@':
+                case '#':
                   scanType = 'id';
                 break;
                 case '"':
