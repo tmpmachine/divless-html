@@ -38,7 +38,7 @@ Example :
 ```html
 [btn "Button 1"]
 <!--nodivless-->
-[ @my-div
+[ #my-div
   Do not replace this part
 ]
 <!--/nodivless-->
@@ -48,7 +48,7 @@ Returned result :
 ```html
 <button>Button 1</button>
 <!--nodivless-->
-[ @my-div
+[ #my-div
   Do not replace this part
 ]
 <!--/nodivless-->
@@ -57,9 +57,9 @@ Returned result :
 
 ## Reserved Attribute Prefix
 ### ID
-Use `@` to set element ID.
+Use `#` to set element ID.
 ```html
-[ @my-div
+[ #my-div
   Hello World.
 ]
 ```
