@@ -108,7 +108,7 @@ Solution: use divless on the inner most element :
 <div>[btn 'This is a button inside a div container']</div>
 ```
 
-## HTML Shortnames
+## HTML Shortname
 | HTML Tag | Shortname |
 | --- | --- |
 | div	 |  |
@@ -123,7 +123,8 @@ Solution: use divless on the inner most element :
 | select	 | sel |
 | option	 | opt |
 
-## CSS Shortnames (for inline style only!)
+## CSS Shortname
+Note : available only for inline style properties.
 | CSS Property | Shortname |
 | --- | --- |
 | padding	 | p |
