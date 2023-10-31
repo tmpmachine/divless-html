@@ -1,29 +1,30 @@
 # divless.js
-Generate HTML code from divless-HTML format.
+One way converter for divless HTML format.
 
-## Use Case & Basic Usage
-You can see the use case here: https://github.com/tmpmachine/codetmp#divless-html under **Divless-HTML** section.
-```javascript
-let html = divless.replace(divlessHTMLText);
-```
+VS Code extension : https://github.com/tmpmachine/vsce-divless.
 
-## Example
-```javascript
-let html = divless.replace(`
+Codetmp7 editor has divless HTML enabled by default : https://github.com/tmpmachine/codetmp.
 
-  [ {bor:1px solid}
-    [p "Hello world!"]
-  ]
+## Usage Example
+To integrate this library with your application, use the following code :
+```html
+<script src="divless.js"></script>
 
-`);
+<script>
+  let html = divless.replace(`
+  
+    [ {bor:1px solid}
+      [p "Hello world!"]
+    ]
+  
+  `);
+</script>
 ```
 Returned result :
 ```html
-
-  <div style="border:1px solid">
-    <p>Hello world!</p>
-  </div>
-
+<div style="border:1px solid">
+  <p>Hello world!</p>
+</div>
 ```
 
 ## Skip Divless Format
