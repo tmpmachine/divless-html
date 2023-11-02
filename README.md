@@ -27,6 +27,9 @@ Returned result :
 </div>
 ```
 
+## Implementing Divless HTML Conversion in Your Application
+Please read the [divless HTML conversion specification](https://github.com/tmpmachine/divless-html/wiki/Divless-HTML-Conversion-Specification).
+
 ## Skip Divless Format
 Divless.js will skip replacing divless HTML format if wrapped inside one of these matching sequence :
 | Start skip | End skip |
