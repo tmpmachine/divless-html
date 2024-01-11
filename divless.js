@@ -1,4 +1,4 @@
-window.divless = (function () {
+let divless = (function () {
   
   let SELF = {
     tag: [], 
@@ -91,7 +91,8 @@ window.divless = (function () {
   };
   
   const skips = [
-    {open:'<!--nodivless-->', close:'<!--/nodivless-->'},
+    {open:'<!-- nodivless -->', close:'<!-- /nodivless -->'},
+    {open:'<!--nodivless-->', close:'<!--/nodivless-->'}, // old pattern
     {open:'<style', close:'</style>'},
     {open:'<script', close:'</script>'},
   ];
@@ -104,7 +105,7 @@ window.divless = (function () {
       {open: '{', close: '}', name: 'style'},
       {open: '"', close: '"', name: 'innerHTML'},
       {open: "'", close: "'", name: 'innerHTML'},
-      {open: '@', close: ' ', name: 'id'},
+      {open: '@', close: ' ', name: 'id'}, // old shortname
       {open: '#', close: ' ', name: 'id'},
     ],
   };
@@ -437,9 +438,9 @@ window.divless = (function () {
         if (scanType == 'attribute') {
           let match = false;
           for (var i = 0; i < shortHandCheck.length; i++) {
-            if (shortHandCheck[i][shortHandPointer] == char)
+            if (shortHandCheck[i][shortHandPointer] == char) {
               match = true;
-            else {
+            } else {
               shortHandCheck.splice(i,1);
               i -= 1;
             }
