@@ -172,8 +172,9 @@ let divless = (function () {
       
     SELF.tag.forEach(function(t) {
       settings.tag.forEach(function(s) {
-        if (s.short === t.short)
+        if (s.short === t.short) {
           s.attributes.class = t.attributes.class;
+        }
       });
     });
     
@@ -207,7 +208,7 @@ let divless = (function () {
       }
 
       for (const skip of skipsToCheck) {
-        var search = skip.open;
+        let search = skip.open;
         
         if (search[pointer] == char) {
           match = true;
@@ -223,8 +224,9 @@ let divless = (function () {
             done = true;
             pointer = 0;
             
-              for (const xs of stack)
+              for (const xs of stack) {
                 ht.push(xs);
+              }
               
             stack.length = 0;
             break;
@@ -241,8 +243,9 @@ let divless = (function () {
           done = true;
           pointer = 0;
           
-            for (const xs of stack)
+            for (const xs of stack) {
               ht.push(xs);
+            }
           
             
           waitSkip = '';
@@ -269,8 +272,9 @@ let divless = (function () {
         pointer = 0;
       }
       
-      for (const xs of stack)
+      for (const xs of stack) {
         ht.push(xs);
+      }
       stack.length = 0;
     }
   }
@@ -294,8 +298,9 @@ let divless = (function () {
       case '<':
         stack.push(char);
         pointer = 1;
-        if (currentState === '')
+        if (currentState === '') {
           currentState = state.OPEN;
+        }
         break;
       case '[':
         if (currentState == 'scanTag') {
@@ -376,8 +381,9 @@ let divless = (function () {
                   scanType = 'attribute';
               }
               
-              for (let key in CSSShortname)
+              for (let key in CSSShortname) {
                 shortHandCheck.push(key);
+              }
               break;
             }
           }
@@ -400,8 +406,9 @@ let divless = (function () {
               attStack.length = 0;
               stopRender(char, attributes);
             } else if (char == lock) {
-              if (lock != ' ')
+              if (lock != ' ') {
                 attStack.push(char);
+              }
               attributes.attribute.push(attStack.join(''));
               
               attMode = '';
@@ -418,8 +425,9 @@ let divless = (function () {
                 attMode = '';
                 attStack.length = 0;
               } else {
-                if (!spaceOne)
+                if (!spaceOne) {
                   spaceOne = true;
+                }
               }
             } else {
               attStack.push(char);
@@ -448,7 +456,7 @@ let divless = (function () {
       } else {
         if (scanType == 'attribute') {
           let match = false;
-          for (var i = 0; i < shortHandCheck.length; i++) {
+          for (let i = 0; i < shortHandCheck.length; i++) {
             if (shortHandCheck[i][shortHandPointer] == char) {
               match = true;
             } else {
@@ -465,8 +473,9 @@ let divless = (function () {
               const end = shortHandPointer;
               shortHandStack.splice(start,end);
               
-              for (const char of CSSShortname[shortHandCheck[0]].split(''))
+              for (const char of CSSShortname[shortHandCheck[0]].split('')) {
                 shortHandStack.push(char);
+              }
             }
           } else {
             if (char == '!') {
@@ -478,8 +487,9 @@ let divless = (function () {
               }
               
               shortHandPointer = 0;
-              for (let key in CSSShortname)
+              for (let key in CSSShortname) {
                 shortHandCheck.push(key);
+              }
             }
             
             shortHandStack.push(char);
@@ -502,8 +512,9 @@ let divless = (function () {
       return;
     }
     
-    if (currentState == state.TAGNAME)
+    if (currentState == state.TAGNAME) {
       finishTag(attributes);
+    }
       
     if (currentState == 'scanTag' || currentState == state.ATTR || unClose > 0) {
       if (scanType == 'class') {
@@ -517,9 +528,9 @@ let divless = (function () {
         stack.length = 0;
       }
       
-      
-      if (attStack.length > 0)
+      if (attStack.length > 0) {
         attributes.attribute.push(attStack.join(''));
+      }
       
       const innerHTML = attributes.innerHTML.join('');
       const newAtt = generateAttributes(attributes);
@@ -539,11 +550,13 @@ let divless = (function () {
       }
       
       if (newAtt.length === 0) {
-        for (const xs of stack)
+        for (const xs of stack) {
           ht.push(xs);
+        }
       } else {
-        for (const xs of stack)
+        for (const xs of stack) {
           ht.push(xs);
+        }
       }
       
       attStack.length = 0;
@@ -558,19 +571,21 @@ let divless = (function () {
   }
   
   function finishTag(attributes) {
-    var tagName = tagStack.join('');
-    var choosenTag = {
+    let tagName = tagStack.join('');
+    let choosenTag = {
       tag: tagName,
       close: true,
       attributes: { class: '' }
     };
         
-    if (tagStack.length === 0)
+    if (tagStack.length === 0) {
       choosenTag = settings.tag[0];
+    }
     
     settings.tag.forEach(function(tag) {
-      if (tag.short === tagName)
+      if (tag.short === tagName) {
         choosenTag = tag;
+      }
     });
     
     ht.push(choosenTag.tag);
@@ -585,23 +600,29 @@ let divless = (function () {
     currentState = 'scanTag';
     tagStack.length = 0;
     attributes.class = choosenTag.attributes.class.split(' ');
-    if (attributes.class[0].length === 0)
+    if (attributes.class[0].length === 0) {
       attributes.class.length = 0;
+    }
   }
   
   function generateAttributes(attributes) {
     const atts = [];
   
-    if (attributes.id.length > 0)
+    if (attributes.id.length > 0) {
       atts.push('id="'+attributes.id.join('')+'"');
-    if (attributes.class.length > 0)
+    }
+    if (attributes.class.length > 0) {
       atts.push('class="'+attributes.class.join(' ')+'"');
-    if (attributes.attribute.length > 0)
+    }
+    if (attributes.attribute.length > 0) {
       atts.push(attributes.attribute.join(' '));
+    }
     if (attributes.style.length > 0) {
-      for (let i in attributes.style)
-        if (!attributes.style[i].endsWith(';'))
+      for (let i in attributes.style) {
+        if (!attributes.style[i].endsWith(';')) {
           attributes.style[i] += ';';
+        }
+      }
       atts.push('style="'+attributes.style.join('')+'"');
     }
     
@@ -611,10 +632,11 @@ let divless = (function () {
     attributes.style.length = 0;
     attributes.innerHTML.length = 0;
     
-    if (atts.length > 0)
+    if (atts.length > 0) {
       return ' '+atts.join(' ');
-    else
+    } else {
       return atts.join(' ');
+    }
   }
   
   function replace(html) {
