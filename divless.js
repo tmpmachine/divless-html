@@ -192,6 +192,7 @@ let divless = (function () {
     return ht.join('');
   }
   
+  let skipsCandidate = [];
   
   function handleStateOpenOrSkip(char) {
     stack.push(char);
@@ -199,12 +200,22 @@ let divless = (function () {
     let done = false;
     
     if (currentState == state.OPEN) {
-      for (const skip of skips) {
+
+      let skipsToCheck = pointer > 1 ? skipsCandidate : skips;
+      if (pointer === 1) {
+          skipsCandidate.length = 0;
+      }
+
+      for (const skip of skipsToCheck) {
         var search = skip.open;
         
         if (search[pointer] == char) {
           match = true;
           
+          if (pointer === 1) {
+              skipsCandidate.push(skip);
+          }
+
           if (search.length == pointer+1) {
             currentState = state.SKIP;
             waitSkip = skip.close;
