@@ -1,0 +1,22 @@
+{
+  "name": "divless-html",
+  "description": "One way converter for divless HTML format.",
+  "version": "1.0.0",
+  "main": "dist/divless.cjs.js",
+  "scripts": {
+    "build": "rollup -c"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tmpmachine/divless-html.git"
+  },
+  "author": "tmpmachine",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tmpmachine/divless-html/issues"
+  },
+  "homepage": "https://github.com/tmpmachine/divless-html#readme",
+  "devDependencies": {
+    "rollup": "2.79.1"
+  }
+}

@@ -1,4 +1,4 @@
-let divless = (function () {
+export let divless = (function () {
   
   let SELF = {
     tag: [], 
