@@ -119,7 +119,7 @@ let divless = (function () {
   };
   
   let shortHandStack = [], shortHandCheck = [];
-  let listen = [], ht = [], stack = [], closeTag = [], attStack = [], newMatch = [];
+  let ht = [], stack = [], closeTag = [], attStack = [], newMatch = [];
   let shortHandPointer = 0, dontClose = 0, pointer = 0, unClose = 0, squareAttributeCount = 0;
   let waitImportant = false, spaceOne = false, typeLock = false;
   let openingClose = '', scanType = '', attMode = '', lock = '', innerLock = '', waitSkip = '', charBypass = '', currentState = state.NONE;
@@ -133,7 +133,6 @@ let divless = (function () {
       
     shortHandStack = []; 
     shortHandCheck = [];
-    listen = []; 
     ht = []; 
     stack = []; 
     closeTag = []; 
