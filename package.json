@@ -1,5 +1,5 @@
 {
-  "name": "divless-html",
+  "name": "@tmp7/divless-html",
   "description": "One way converter for divless HTML format.",
   "version": "1.0.0",
   "main": "dist/divless.cjs.js",
