@@ -102,27 +102,43 @@ let divless = (function () {
       {short: '.', prefix: ''},
     ],
     attributes: [
-      {open: '{', close: '}', name: 'style'},
-      {open: '"', close: '"', name: 'innerHTML'},
-      {open: "'", close: "'", name: 'innerHTML'},
-      {open: '@', close: ' ', name: 'id'}, // old shortname
-      {open: '#', close: ' ', name: 'id'},
+      {open: '{', close: '}'}, // style
+      {open: '"', close: '"'}, // tag content
+      {open: "'", close: "'"}, // tag content
+      {open: '@', close: ' '}, // ID (old shortname)
+      {open: '#', close: ' '}, // ID
     ],
   };
-  
+
+  const modesAtt = {
+    NONE: 0,
+    LOCK: 1,
+    VALUE: 2,
+    WAIT_VALUE: 3,
+  };
+
+  const scanTypes = {
+    NONE: 0,
+    ATTR: 1,
+    CONTENT: 2,
+    CLASS: 3,
+    ID: 4,
+  }
+
   const state = {
-    NONE: '',
-    OPEN: 'open',
-    SKIP: 'skip',
-    TAGNAME: 'getTagName',
-    ATTR: 'scanAtt',
+    NONE: 0,
+    OPEN: 1,
+    SKIP: 2,
+    TAGNAME: 3,
+    ATTR: 4,
+    SCAN_TAG: 5,
   };
   
   let shortHandStack = [], shortHandCheck = [];
   let ht = [], stack = [], closeTag = [], attStack = [], newMatch = [];
   let shortHandPointer = 0, dontClose = 0, pointer = 0, unClose = 0, squareAttributeCount = 0;
   let waitImportant = false, spaceOne = false, typeLock = false;
-  let openingClose = '', scanType = '', attMode = '', lock = '', innerLock = '', waitSkip = '', charBypass = '', currentState = state.NONE;
+  let openingClose = '', scanType = scanTypes.NONE, attMode = modesAtt.NONE, lock = '', innerLock = '', waitSkip = '', charBypass = '', currentState = state.NONE;
   let tagStack = [];
   let skipNextLineFeeds = false;
   let settings = {
@@ -147,8 +163,8 @@ let divless = (function () {
     spaceOne = false;
     typeLock = false;
     openingClose = '';
-    scanType = '';
-    attMode = '';
+    scanType = scanTypes.NONE;
+    attMode = modesAtt.NONE;
     lock = '';
     innerLock = '';
     waitSkip = '';
@@ -261,7 +277,7 @@ let divless = (function () {
       if (currentState == state.OPEN) {
         currentState = state.NONE;
         if (stack.join('') == '<!--[') {
-          attMode = '';
+          attMode = modesAtt.NONE;
           unClose++;
           currentState = state.TAGNAME;
           stack.pop();
@@ -279,12 +295,12 @@ let divless = (function () {
   }
   
   function handleOtherStates(char, attributes) {
-    if (scanType == 'attribute' || attMode == 'lock') {
+    if (scanType == scanTypes.ATTR || attMode == modesAtt.LOCK) {
       charBypass = char;
       char = 'a';
     }
     
-    if (scanType == 'innerHTML') {
+    if (scanType == scanTypes.CONTENT) {
       if (char != innerLock) {
         stack.push(char);
         return;
@@ -297,16 +313,16 @@ let divless = (function () {
       case '<':
         stack.push(char);
         pointer = 1;
-        if (currentState === '') {
+        if (currentState === state.NONE) {
           currentState = state.OPEN;
         }
         break;
       case '[':
-        if (currentState == 'scanTag') {
+        if (currentState == state.SCAN_TAG) {
           squareAttributeCount++;
           handleRegularChar(char, attributes);
         } else {
-          attMode = '';
+          attMode = modesAtt.NONE;
           unClose++;
           ht.push('<');
           currentState = state.TAGNAME;
@@ -315,7 +331,7 @@ let divless = (function () {
       case ']':
       case '\n':
       case '\r':
-        if (char == ']' && currentState == 'scanTag' && squareAttributeCount > 0) {
+        if (char == ']' && currentState == state.SCAN_TAG && squareAttributeCount > 0) {
           squareAttributeCount--;
           handleRegularChar(char, attributes);
         } else {
@@ -341,14 +357,14 @@ let divless = (function () {
     
     if (char === ' ' && currentState === state.TAGNAME) {
       finishTag(attributes);
-    } else if (currentState == 'scanTag') {
+    } else if (currentState == state.SCAN_TAG) {
       let match = false;
-      if (attMode == '') {
+      if (attMode == modesAtt.NONE) {
         for (const cls of rules.class) {
           if (cls.short == char) {
             match = true;
             currentState = state.ATTR;
-            scanType = 'class';
+            scanType = scanTypes.CLASS;
             stack.push(cls.prefix);
             break;
           }
@@ -357,7 +373,7 @@ let divless = (function () {
       
       if (!match) {
         
-        if (attMode == '') {
+        if (attMode == modesAtt.NONE) {
           for (const attribute of rules.attributes) {
             if (attribute.open == char) {
               match = true;
@@ -366,18 +382,18 @@ let divless = (function () {
               switch (attribute.open) {
                 case '@':
                 case '#':
-                  scanType = 'id';
+                  scanType = scanTypes.ID;
                 break;
                 case '"':
-                  scanType = 'innerHTML';
+                  scanType = scanTypes.CONTENT;
                   innerLock = '"';
                 break;
                 case "'":
-                  scanType = 'innerHTML';
+                  scanType = scanTypes.CONTENT;
                   innerLock = "'";
                 break;
                 default:
-                  scanType = 'attribute';
+                  scanType = scanTypes.ATTR;
               }
               
               for (let key in CSSShortname) {
@@ -389,18 +405,18 @@ let divless = (function () {
         }
         
         if (!match) {
-          if (attMode == 'value') {
+          if (attMode == modesAtt.VALUE) {
             attStack.push(char);
-            attMode = 'lock';
+            attMode = modesAtt.LOCK;
             
             if (char == '"' || char == "'")
               lock = char;
             else
               lock = ' ';
-          } else if (attMode == 'lock') {
+          } else if (attMode == modesAtt.LOCK) {
             if (lock == ' ' && (char == '\n' || char == ']')) {
               attributes.attribute.push(attStack.join(''));
-              attMode = '';
+              attMode = modesAtt.NONE;
               lock = '';
               attStack.length = 0;
               stopRender(char, attributes);
@@ -410,7 +426,7 @@ let divless = (function () {
               }
               attributes.attribute.push(attStack.join(''));
               
-              attMode = '';
+              attMode = modesAtt.NONE;
               lock = '';
               attStack.length = 0;
             } else {
@@ -419,9 +435,9 @@ let divless = (function () {
               
           } else {
             if (char == ' ') {
-              if (attMode == 'waitForValue') {
+              if (attMode == modesAtt.WAIT_VALUE) {
                 attributes.attribute.push(attStack.join(''));
-                attMode = '';
+                attMode = modesAtt.NONE;
                 attStack.length = 0;
               } else {
                 if (!spaceOne) {
@@ -430,30 +446,30 @@ let divless = (function () {
               }
             } else {
               attStack.push(char);
-              attMode = (char == '=' ? 'value' : 'waitForValue');
+              attMode = (char == '=' ? modesAtt.VALUE : modesAtt.WAIT_VALUE);
             }
           }
         }
       }
     } else if (currentState == state.ATTR) {
-      if ((char == ' ' && scanType != 'attribute') || char == '}' || char == '"' && scanType != 'attribute' || char == "'" && scanType != 'attribute') {
-        if (scanType == 'class') {
+      if ((char == ' ' && scanType != scanTypes.ATTR) || char == '}' || char == '"' && scanType != scanTypes.ATTR || char == "'" && scanType != scanTypes.ATTR) {
+        if (scanType == scanTypes.CLASS) {
           attributes.class.push(stack.join(''));
-        } else if (scanType == 'innerHTML') {
+        } else if (scanType == scanTypes.CONTENT) {
           attributes.innerHTML.push(stack.join(''));
-        } else if (scanType == 'id') {
+        } else if (scanType == scanTypes.ID) {
           attributes.id.push(stack.join(''));
-        } else if (scanType == 'attribute') {
+        } else if (scanType == scanTypes.ATTR) {
           attributes.style.push(shortHandStack.join(''));
           shortHandStack.length = 0;
           shortHandPointer = 0;
         }
 
         stack.length = 0;
-        currentState = 'scanTag';
-        scanType = '';
+        currentState = state.SCAN_TAG;
+        scanType = scanTypes.NONE;
       } else {
-        if (scanType == 'attribute') {
+        if (scanType == scanTypes.ATTR) {
           let match = false;
           for (let i = 0; i < shortHandCheck.length; i++) {
             if (shortHandCheck[i][shortHandPointer] == char) {
@@ -515,14 +531,14 @@ let divless = (function () {
       finishTag(attributes);
     }
       
-    if (currentState == 'scanTag' || currentState == state.ATTR || unClose > 0) {
-      if (scanType == 'class') {
+    if (currentState == state.SCAN_TAG || currentState == state.ATTR || unClose > 0) {
+      if (scanType == scanTypes.CLASS) {
         attributes.class.push(stack.join(''));
         stack.length = 0;
-      } else if (scanType == 'id') {
+      } else if (scanType == scanTypes.ID) {
         attributes.id.push(stack.join(''));
         stack.length = 0;
-      } else if (scanType == 'innerHTML') {
+      } else if (scanType == scanTypes.CONTENT) {
         attributes.innerHTML.push(stack.join(''));
         stack.length = 0;
       }
@@ -563,7 +579,7 @@ let divless = (function () {
       openingClose = '';
       stack.length = 0;
       currentState = state.NONE;
-      scanType = '';
+      scanType = scanTypes.NONE;
     } else {
       ht.push(char);
     }
@@ -596,7 +612,7 @@ let divless = (function () {
       openingClose = '';
       closeTag.push('/>');
     }
-    currentState = 'scanTag';
+    currentState = state.SCAN_TAG;
     tagStack.length = 0;
     attributes.class = choosenTag.attributes.class.split(' ');
     if (attributes.class[0].length === 0) {
